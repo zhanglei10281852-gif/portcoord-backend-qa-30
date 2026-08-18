@@ -46,13 +46,7 @@ func (r *realTimer) Reset(d time.Duration) bool { return r.t.Reset(d) }
 type realTicker struct{ t *time.Ticker }
 
 func (r *realTicker) C() <-chan time.Time { return r.t.C }
-func (r *realTicker) Stop() {
-	select {
-	case <-r.t.C:
-	default:
-	}
-	r.t.Reset(time.Millisecond)
-}
+func (r *realTicker) Stop()               { r.t.Stop() }
 
 // FakeClock wraps benbjohnson/clock for deterministic tests.
 type FakeClock struct {

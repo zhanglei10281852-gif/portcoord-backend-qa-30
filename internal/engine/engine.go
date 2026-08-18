@@ -67,12 +67,9 @@ func (e *Engine) Start(ctx context.Context) {
 	if !e.running.CompareAndSwap(false, true) {
 		return
 	}
-	ctx, e.cancel = context.WithCancel(context.WithoutCancel(ctx))
+	ctx, e.cancel = context.WithCancel(ctx)
 	e.wg.Add(1)
 	go e.loop(ctx)
-	if ctx.Err() != nil {
-		e.running.Store(false)
-	}
 	e.logger.Info("scheduling engine started", apperr.F("tick_interval", e.tickInterval))
 }
 
@@ -168,9 +165,6 @@ func (e *Engine) incErrors() {
 func (e *Engine) Stats() Stats {
 	e.statsMu.Lock()
 	defer e.statsMu.Unlock()
-	if !e.running.Load() {
-		return Stats{}
-	}
 	return e.stats
 }
 
